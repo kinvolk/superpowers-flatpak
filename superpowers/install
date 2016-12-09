@@ -1,0 +1,17 @@
+#!/usr/bin/bash
+
+set -e
+
+prefix=$(cat prefix)
+supdir="${prefix}/Superpowers"
+mkdir "${supdir}"
+# I have no clue what really needs to be copied…
+cp -a core "${supdir}"
+cp -a app "${supdir}"
+find "${supdir}" -type d -a -name '.git' -exec rm -rf {} \;
+
+bindir="${prefix}/bin"
+mkdir "${bindir}"
+escapedsupdir=$(echo "${supdir}" | sed -e 's/[\/&]/\\&/g')
+sed -ie 's/@SUPDIR@/${escapedsupdir}/g' run-superpowers
+cp -a run-superpowers "${bindir}"

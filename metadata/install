@@ -1,0 +1,9 @@
+#!/usr/bin/bash
+
+set -e
+
+prefix=$(cat prefix)
+
+install -D 'com.sparklinlabs.Superpowers.desktop' "${prefix}/share/applications/com.sparklinlabs.Superpowers.desktop"
+install -D 'com.sparklinlabs.Superpowers.png' "${prefix}/share/icons/hicolor/128x128/apps/com.sparklinlabs.Superpowers.png"
+install -D 'com.sparklinlabs.Superpowers.appdata.xml' "${prefix}/share/appdata/com.sparklinlabs.Superpowers.appdata.xml"

@@ -1,0 +1,118 @@
+{
+    "app-id": "com.sparklinlabs.Superpowers",
+    "base": "io.atom.electron.BaseApp",
+    "base-version": "master",
+    "runtime": "org.freedesktop.Platform",
+    "runtime-version": "1.4",
+    "sdk": "org.freedesktop.Sdk",
+    "command": "run-superpowers",
+     "finish-args": [
+        "--share=ipc",
+        "--socket=x11",
+        "--socket=wayland",
+        "--filesystem=host",
+        "--share=network",
+        "--filesystem=xdg-run/dconf"
+    ],
+    "modules": [
+        {
+            "name": "nodejs",
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://nodejs.org/dist/v5.12.0/node-v5.12.0.tar.xz",
+                    "path": "node-v5.12.0.tar.xz",
+                    "sha256": "4f926373f11f2a25156eee1804ec012eb912c42e5d34fc2909889da22efdadfe"
+                }
+            ]
+        },
+        {
+            "name": "superpowers",
+            "build-options": {
+                "build-args": [
+                    "--share=network"
+                ]
+            },
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/superpowers/superpowers-core.git",
+                    "branch": "f48e3a6616758e2606cfd0ead35e463d634093df",
+                    "dest": "core"
+                },
+                {
+                    "type": "git",
+                    "url": "https://github.com/superpowers/superpowers-game.git",
+                    "branch": "v4.0.3",
+                    "dest": "core/systems/game"
+                },
+                {
+                    "type": "git",
+                    "url": "https://github.com/superpowers/superpowers-app.git",
+                    "branch": "v4.0.0",
+                    "dest": "app"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/Makefile"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/install"
+                },
+                {
+                    "type": "file",
+                    "path": "common/configure"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/run-superpowers"
+                }
+            ]
+        },
+        {
+            "name": "electron-prebuilt",
+            "no-autogen": true,
+            "build-options": {
+                "build-args": [
+                    "--share=network"
+                ]
+            },
+            "sources": [
+                {
+                    "type": "file",
+                    "path": "electron-prebuilt/Makefile"
+                }
+            ]
+        },
+        {
+            "name": "metadata",
+            "sources": [
+                {
+                    "type": "file",
+                    "path": "common/configure"
+                },
+                {
+                    "type": "file",
+                    "path": "metadata/Makefile"
+                },
+                {
+                    "type": "file",
+                    "path": "metadata/install"
+                },
+                {
+                    "type": "file",
+                    "path": "metadata/com.sparklinlabs.Superpowers.png"
+                },
+                {
+                    "type": "file",
+                    "path": "metadata/com.sparklinlabs.Superpowers.desktop"
+                },
+                {
+                    "type": "file",
+                    "path": "metadata/com.sparklinlabs.Superpowers.appdata.xml"
+                }
+            ]
+        }
+    ]
+}
