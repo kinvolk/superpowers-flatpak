@@ -3,4 +3,6 @@ all:
 	cd app && npm run build
 
 install:
-	./install.sh
+	./install
+
+.PHONY: all install
