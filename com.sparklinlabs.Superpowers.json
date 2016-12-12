@@ -6,13 +6,13 @@
     "runtime-version": "1.4",
     "sdk": "org.freedesktop.Sdk",
     "command": "run-superpowers",
-     "finish-args": [
+    "finish-args": [
+        "--device=dri",
+        "--filesystem=home",
         "--share=ipc",
-        "--socket=x11",
-        "--socket=wayland",
-        "--filesystem=host",
         "--share=network",
-        "--filesystem=xdg-run/dconf"
+        "--socket=pulseaudio",
+        "--socket=x11"
     ],
     "modules": [
         {
