@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Superpowers
+GenericName=2D+3D game maker
+Comment=2D+3D game making for indies
+Exec=run-superpowers
+Icon=com.sparklinlabs.Superpowers
+Terminal=false
+Categories=Development;IDE;

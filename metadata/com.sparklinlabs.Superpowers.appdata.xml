@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>com.sparklinlabs.Superpowers.desktop</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <summary>Free 2D+3D game maker</summary>
+  <description>
+    <p>
+      Superpowers is an HTML5 development environment for making 2D and 3D games.
+      It can be extended with plugins and lets you collaborate in real-time.
+    </p>
+  </description>
+  <url type="homepage">http://superpowers-html5.com/index.en.html</url>
+  <screenshots>
+    <screenshot type="default">
+      <image>http://i.imgur.com/g4iNlEn.png</image>
+    </screenshot>
+  </screenshots>
+  <project_license>ISC</project_license>
+  <developer_name>Sparklin Labs</developer_name>
+  <url type="bugtracker">https://github.com/superpowers/superpowers-app/issues</url>
+  <url type="help">http://docs.superpowers-html5.com/en/getting-started/about-superpowers</url>
+</component>
