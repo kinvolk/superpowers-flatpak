@@ -67,6 +67,10 @@
                 {
                     "type": "file",
                     "path": "superpowers/run-superpowers"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/0001-Add-data-path-parameter.patch"
                 }
             ]
         },

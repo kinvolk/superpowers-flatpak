@@ -1,0 +1,50 @@
+From d9f2d2c9311773365ec32500482a63c83dbc479e Mon Sep 17 00:00:00 2001
+From: Krzesimir Nowak <krzesimir@kinvolk.io>
+Date: Mon, 12 Dec 2016 14:31:57 +0100
+Subject: [PATCH] Add data-path parameter
+
+---
+ package.json    | 2 +-
+ src/getPaths.ts | 6 +++++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/package.json b/package.json
+index a5b6309..6526f7d 100644
+--- a/package.json
++++ b/package.json
+@@ -4,7 +4,7 @@
+   "scripts": {
+     "prebuild": "npm install",
+     "build": "gulp --silent",
+-    "start": "electron public --core-path=\"../core\"",
++    "start": "electron public --core-path=\"../core\" --data-path=\"<default>\"",
+     "package": "node scripts/package.js"
+   },
+   "license": "ISC",
+diff --git a/src/getPaths.ts b/src/getPaths.ts
+index 3d5a86d..6017e18 100644
+--- a/src/getPaths.ts
++++ b/src/getPaths.ts
+@@ -7,6 +7,7 @@ import { LocalizedError } from "./shared/i18n";
+ const argv = yargs
+   .usage("Usage: $0 [options]")
+   .describe("core-path", "Path to Superpowers core")
++  .describe("data-path", "Path to Superpowers writable data (used only when core-path is passed too, use '<default>' to get the default electron app appData directory. Falls back to core-path.")
+   .argv;
+ 
+ export default function getPaths(callback: (err: LocalizedError, corePath?: string, dataPath?: string) => void) {
+@@ -15,7 +16,10 @@ export default function getPaths(callback: (err: LocalizedError, corePath?: stri
+ 
+   let corePath = argv["core-path"] != null ? path.resolve(argv["core-path"]) : null;
+   if (corePath != null) {
+-    dataPath = corePath;
++    dataPath = argv["data-path"] != null ? path.resolve(argv["data-path"]) : corePath;
++    if (dataPath === "<default>") {
++      dataPath = path.join(electron.app.getPath("appData"), "Superpowers");
++    }
+     process.nextTick(() => { callback(null, corePath, dataPath); });
+     return;
+   }
+-- 
+2.7.4
+
