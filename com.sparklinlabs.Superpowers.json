@@ -37,19 +37,19 @@
                 {
                     "type": "git",
                     "url": "https://github.com/superpowers/superpowers-core.git",
-                    "branch": "f48e3a6616758e2606cfd0ead35e463d634093df",
+                    "branch": "8c228b13d7de45f4d1f379a4a95027a759f61d52",
                     "dest": "core"
                 },
                 {
                     "type": "git",
                     "url": "https://github.com/superpowers/superpowers-game.git",
-                    "branch": "v4.0.3",
+                    "branch": "82d3d1ccf2ad6831e629537d186c76cbd294e896",
                     "dest": "core/systems/game"
                 },
                 {
                     "type": "git",
                     "url": "https://github.com/superpowers/superpowers-app.git",
-                    "branch": "v4.0.0",
+                    "branch": "50f9f21faa18a8ae7248b41dc2c2b58b3ccfe760",
                     "dest": "app"
                 },
                 {
