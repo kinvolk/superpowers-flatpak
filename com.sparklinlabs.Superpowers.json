@@ -71,6 +71,10 @@
                 {
                     "type": "file",
                     "path": "superpowers/0001-Add-data-path-parameter.patch"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/0002-Disable-updates.patch"
                 }
             ]
         },

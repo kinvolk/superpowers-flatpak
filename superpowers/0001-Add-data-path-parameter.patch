@@ -1,7 +1,7 @@
-From f3cc382ca8f95220d363cbabea784fe184d3ba35 Mon Sep 17 00:00:00 2001
+From a67e8cad154ab432b293880f22b201b031829727 Mon Sep 17 00:00:00 2001
 From: Krzesimir Nowak <krzesimir@kinvolk.io>
 Date: Mon, 12 Dec 2016 14:31:57 +0100
-Subject: [PATCH] Add data-path parameter
+Subject: [PATCH 1/2] Add data-path parameter
 
 ---
  package.json    | 2 +-
@@ -22,7 +22,7 @@ index a5b6309..6526f7d 100644
    },
    "license": "ISC",
 diff --git a/src/getPaths.ts b/src/getPaths.ts
-index 3d5a86d..a083e4b 100644
+index 65f60e3..c977b29 100644
 --- a/src/getPaths.ts
 +++ b/src/getPaths.ts
 @@ -7,6 +7,7 @@ import { LocalizedError } from "./shared/i18n";
@@ -33,7 +33,7 @@ index 3d5a86d..a083e4b 100644
    .argv;
  
  export default function getPaths(callback: (err: LocalizedError, corePath?: string, dataPath?: string) => void) {
-@@ -15,7 +16,12 @@ export default function getPaths(callback: (err: LocalizedError, corePath?: stri
+@@ -14,7 +15,12 @@ export default function getPaths(callback: (err: LocalizedError, corePath?: stri
  
    let corePath = argv["core-path"] != null ? path.resolve(argv["core-path"]) : null;
    if (corePath != null) {
@@ -48,5 +48,5 @@ index 3d5a86d..a083e4b 100644
      return;
    }
 -- 
-2.7.4
+2.9.3
 
