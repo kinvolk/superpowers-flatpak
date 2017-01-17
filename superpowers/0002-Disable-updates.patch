@@ -1,7 +1,7 @@
 From f38a0d23cf5d0491f1adeae01a8bbc90cb6917bf Mon Sep 17 00:00:00 2001
 From: Krzesimir Nowak <krzesimir@kinvolk.io>
 Date: Mon, 16 Jan 2017 21:47:49 +0100
-Subject: [PATCH 2/2] Disable updates
+Subject: [PATCH 2/3] Disable updates
 
 We don't want them inside the flatpak sandbox.
 ---
