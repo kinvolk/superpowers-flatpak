@@ -82,6 +82,11 @@
                     "type": "file",
                     "path": "superpowers/app-patches/0003-Pass-some-more-env-variables-to-the-server-process.patch",
                     "dest": "app-patches"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/core-patches/0001-Do-not-try-to-write-json-files-in-the-read-only-dire.patch",
+                    "dest": "core-patches"
                 }
             ]
         },
