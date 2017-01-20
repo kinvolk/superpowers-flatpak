@@ -1,4 +1,4 @@
-From 4803947269b0850bff96b3822dfcb1b18f1a9cbb Mon Sep 17 00:00:00 2001
+From 60ee1d9e760ae76368e5a4a0ff44058d0d3a23a1 Mon Sep 17 00:00:00 2001
 From: Krzesimir Nowak <krzesimir@kinvolk.io>
 Date: Wed, 18 Jan 2017 10:39:55 +0100
 Subject: [PATCH] Add writable data path next to the possibly read-only data
@@ -19,8 +19,8 @@ superpowers, systems, config, plugins JSON files can be written.
  server/commands/start.ts  |  20 ++++----
  server/commands/utils.ts  | 113 +++++++++++++++++++++++++---------------------
  server/index.ts           |   7 +--
- server/loadSystems.ts     |  37 +++++++++++----
- 10 files changed, 122 insertions(+), 80 deletions(-)
+ server/loadSystems.ts     |  40 ++++++++++++----
+ 10 files changed, 125 insertions(+), 80 deletions(-)
 
 diff --git a/SupClient/index.ts b/SupClient/index.ts
 index 6efed53..437096c 100644
@@ -397,10 +397,16 @@ index 46f0a93..d89f5bb 100644
    case "install": require("./commands/install").default(systemId, pluginFullName); break;
    case "uninstall": require("./commands/uninstall").default(systemId, pluginFullName); break;
 diff --git a/server/loadSystems.ts b/server/loadSystems.ts
-index 35c61dc..1b38fff 100644
+index 35c61dc..cd8e531 100644
 --- a/server/loadSystems.ts
 +++ b/server/loadSystems.ts
-@@ -7,17 +7,29 @@ import getLocalizedFilename from "./getLocalizedFilename";
+@@ -2,22 +2,35 @@ import * as path from "path";
+ import * as fs from "fs";
+ import * as express from "express";
+ import * as async from "async";
++import * as mkdirp from "mkdirp";
+ import getLocalizedFilename from "./getLocalizedFilename";
+ 
  function shouldIgnoreFolder(pluginName: string) { return pluginName.indexOf(".") !== -1 || pluginName === "node_modules"; }
  
  export default function(mainApp: express.Express, buildApp: express.Express, callback: Function) {
@@ -435,24 +441,26 @@ index 35c61dc..1b38fff 100644
      mainApp.use(`/systems/${systemId}`, express.static(`${systemPath}/public`));
      buildApp.use(`/systems/${systemId}`, express.static(`${systemPath}/public`));
  
-@@ -25,7 +37,10 @@ export default function(mainApp: express.Express, buildApp: express.Express, cal
+@@ -25,7 +38,12 @@ export default function(mainApp: express.Express, buildApp: express.Express, cal
      let templatesList: string[] = [];
      const templatesFolder = `${systemPath}/public/templates`;
      if (fs.existsSync(templatesFolder)) templatesList = fs.readdirSync(templatesFolder);
 -    fs.writeFileSync(`${systemPath}/public/templates.json`, JSON.stringify(templatesList, null, 2));
-+    const templatesFile = `${rwSystemPath}/public/templates.json`;
++    const systemPublicDir = `${rwSystemPath}/public`;
++    mkdirp.sync(systemPublicDir);
++    const templatesFile = `${systemPublicDir}/templates.json`;
 +    fs.writeFileSync(templatesFile, JSON.stringify(templatesList, null, 2));
 +    mainApp.use(`/systems/${systemId}/templates.json`, express.static(templatesFile));
 +    buildApp.use(`/systems/${systemId}/templates.json`, express.static(templatesFile));
  
      // Load server-side system module
      const systemServerModulePath = `${systemPath}/server`;
-@@ -37,12 +52,18 @@ export default function(mainApp: express.Express, buildApp: express.Express, cal
+@@ -37,12 +55,18 @@ export default function(mainApp: express.Express, buildApp: express.Express, cal
  
      // Load plugins
      const pluginsInfo = SupCore.system.pluginsInfo = loadPlugins(systemId, `${systemPath}/plugins`, mainApp, buildApp);
 -    fs.writeFileSync(`${systemPath}/public/plugins.json`, JSON.stringify(pluginsInfo, null, 2));
-+    const pluginsFile = `${rwSystemPath}/public/plugins.json`;
++    const pluginsFile = `${systemPublicDir}/plugins.json`;
 +    fs.writeFileSync(pluginsFile, JSON.stringify(pluginsInfo, null, 2));
 +    mainApp.use(`/systems/${systemId}/plugins.json`, express.static(pluginsFile));
 +    buildApp.use(`/systems/${systemId}/plugins.json`, express.static(pluginsFile));
