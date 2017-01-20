@@ -1,4 +1,5 @@
 all:
+	cd core/systems/game && git apply ../../../game-patches/*.patch
 	cd core && git apply ../core-patches/*.patch && npm run build
 	cd app && git apply ../app-patches/*.patch && npm run build
 

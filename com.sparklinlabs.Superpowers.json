@@ -70,7 +70,7 @@
                 },
                 {
                     "type": "file",
-                    "path": "superpowers/app-patches/0001-Add-data-path-parameter.patch",
+                    "path": "superpowers/app-patches/0001-Add-ro-data-path-and-rw-data-path-parameters.patch",
                     "dest": "app-patches"
                 },
                 {
@@ -85,8 +85,13 @@
                 },
                 {
                     "type": "file",
-                    "path": "superpowers/core-patches/0001-Do-not-try-to-write-json-files-in-the-read-only-dire.patch",
+                    "path": "superpowers/core-patches/0001-Add-writable-data-path-next-to-the-possibly-read-onl.patch",
                     "dest": "core-patches"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/game-patches/0001-Update-to-changes-in-core.patch",
+                    "dest": "game-patches"
                 }
             ]
         },

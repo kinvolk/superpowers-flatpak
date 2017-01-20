@@ -1,4 +1,4 @@
-From f38a0d23cf5d0491f1adeae01a8bbc90cb6917bf Mon Sep 17 00:00:00 2001
+From a69850b0e78a75242322f71392766c8c4f3b7af4 Mon Sep 17 00:00:00 2001
 From: Krzesimir Nowak <krzesimir@kinvolk.io>
 Date: Mon, 16 Jan 2017 21:47:49 +0100
 Subject: [PATCH 2/3] Disable updates

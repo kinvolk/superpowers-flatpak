@@ -1,0 +1,281 @@
+From 444d756c96f72044fb05deb05f91533d70b35b42 Mon Sep 17 00:00:00 2001
+From: Krzesimir Nowak <krzesimir@kinvolk.io>
+Date: Mon, 12 Dec 2016 14:31:57 +0100
+Subject: [PATCH 1/3] Add ro-data-path and --rw-data-path parameters
+
+The --rw-data-path is used to point to the directory where we can
+write some files (like settings). The server will also use this
+directory through the new --rw-data-path flag.
+---
+ package.json                         |  2 +-
+ src/getPaths.ts                      | 43 +++++++++++++++++++++++++-----------
+ src/main.ts                          | 16 ++++++++------
+ src/renderer/forkServerProcess.ts    |  2 +-
+ src/renderer/index.ts                |  6 ++---
+ src/renderer/serverSettings/index.ts |  6 ++---
+ src/renderer/settings.ts             | 12 +++++-----
+ 7 files changed, 54 insertions(+), 33 deletions(-)
+
+diff --git a/package.json b/package.json
+index a5b6309..219d1d1 100644
+--- a/package.json
++++ b/package.json
+@@ -4,7 +4,7 @@
+   "scripts": {
+     "prebuild": "npm install",
+     "build": "gulp --silent",
+-    "start": "electron public --core-path=\"../core\"",
++    "start": "electron public --core-path=\"../core\" --rw-data-path=\"<default>\"",
+     "package": "node scripts/package.js"
+   },
+   "license": "ISC",
+diff --git a/src/getPaths.ts b/src/getPaths.ts
+index 65f60e3..b83a732 100644
+--- a/src/getPaths.ts
++++ b/src/getPaths.ts
+@@ -7,28 +7,45 @@ import { LocalizedError } from "./shared/i18n";
+ const argv = yargs
+   .usage("Usage: $0 [options]")
+   .describe("core-path", "Path to Superpowers core")
++  .describe("ro-data-path", "Path to Superpowers readonly data (used only when core-path is passed too, use '<default>' to get the default electron app appData directory. Falls back to core-path.")
++  .describe("rw-data-path", "Path to Superpowers writable data (used only when core-path is passed too, use '<default>' to get the default electron app appData directory. Falls back to core-path.")
+   .argv;
+ 
+-export default function getPaths(callback: (err: LocalizedError, corePath?: string, dataPath?: string) => void) {
+-  let dataPath: string;
++export default function getPaths(callback: (err: LocalizedError, corePath?: string, roDataPath?: string, rwDataPath?: string) => void) {
++  let roDataPath: string;
++  let rwDataPath: string;
+ 
+   let corePath = argv["core-path"] != null ? path.resolve(argv["core-path"]) : null;
+   if (corePath != null) {
+-    dataPath = corePath;
+-    process.nextTick(() => { callback(null, corePath, dataPath); });
++    roDataPath = argv["ro-data-path"] != null ? argv["ro-data-path"] : corePath;
++    if (roDataPath === "<default>") {
++      roDataPath = path.join(electron.app.getPath("appData"), "Superpowers");
++    } else {
++      roDataPath = path.resolve(roDataPath);
++    }
++
++    rwDataPath = argv["rw-data-path"] != null ? argv["rw-data-path"] : corePath;
++    if (rwDataPath === "<default>") {
++      rwDataPath = path.join(electron.app.getPath("appData"), "Superpowers");
++    } else {
++      rwDataPath = path.resolve(rwDataPath);
++    }
++
++    process.nextTick(() => { callback(null, corePath, roDataPath, rwDataPath); });
+     return;
+   }
+ 
+   try {
+-    dataPath = path.join(electron.app.getPath("appData"), "Superpowers");
++    roDataPath = rwDataPath = path.join(electron.app.getPath("appData"), "Superpowers");
+   } catch (err) {
+     process.nextTick(() => { callback(new LocalizedError("startup:errors.couldNotGetDataPath", { details: err.message })); });
+     return;
+   }
+ 
+-  console.log(dataPath);
++  console.log(roDataPath);
++  console.log(rwDataPath);
+ 
+-  if (!fs.existsSync(dataPath)) {
++  if (!fs.existsSync(rwDataPath)) {
+     // This is the old custom logic we used to determine the appData folder
+     // so if the new data folder doesn't exist, we'll try to migrate from the old one
+     let oldDataPath: string;
+@@ -46,19 +63,19 @@ export default function getPaths(callback: (err: LocalizedError, corePath?: stri
+     }
+ 
+     if (oldDataPath != null && fs.existsSync(oldDataPath)) {
+-      console.log(`Migrating data from ${oldDataPath} to ${dataPath}...`);
+-      fs.renameSync(oldDataPath, dataPath);
++      console.log(`Migrating data from ${oldDataPath} to ${rwDataPath}...`);
++      fs.renameSync(oldDataPath, rwDataPath);
+     }
+   }
+ 
+-  corePath = path.join(dataPath, "core");
++  corePath = path.join(roDataPath, "core");
+ 
+-  fs.mkdir(dataPath, (err) => {
++  fs.mkdir(rwDataPath, (err) => {
+     if (err != null && err.code !== "EEXIST") {
+-      callback(new LocalizedError("startup:errors.couldNotCreateUserDataFolder", { dataPath, reason: err.message }));
++      callback(new LocalizedError("startup:errors.couldNotCreateUserDataFolder", { rwDataPath, reason: err.message }));
+       return;
+     }
+ 
+-    callback(null, corePath, dataPath);
++    callback(null, corePath, roDataPath, rwDataPath);
+   });
+ }
+diff --git a/src/main.ts b/src/main.ts
+index d888471..03630e7 100644
+--- a/src/main.ts
++++ b/src/main.ts
+@@ -6,7 +6,8 @@ import getLanguageCode from "./getLanguageCode";
+ import * as SupAppIPC from "./ipc";
+ 
+ let corePath: string;
+-let userDataPath: string;
++let roUserDataPath: string;
++let rwUserDataPath: string;
+ 
+ let mainWindow: Electron.BrowserWindow;
+ let trayIcon: Electron.Tray;
+@@ -48,7 +49,7 @@ function startCleanExit() {
+ electron.ipcMain.on("ready-to-quit", (event) => {
+   if (event.sender !== mainWindow.webContents) return;
+ 
+-  SupAppIPC.saveAuthorizations(userDataPath);
++  SupAppIPC.saveAuthorizations(rwUserDataPath);
+ 
+   console.log("Exited cleanly.");
+   isReadyToQuit = true;
+@@ -60,13 +61,14 @@ electron.ipcMain.on("show-main-window", () => { restoreMainWindow(); });
+ function onAppReady() {
+   menu.setup(electron.app);
+ 
+-  getPaths((dataPathErr, pathToCore, pathToUserData) => {
+-    userDataPath = pathToUserData;
++  getPaths((dataPathErr, pathToCore, pathToRoUserData, pathToRwUserData) => {
++    roUserDataPath = pathToRoUserData;
++    rwUserDataPath = pathToRwUserData;
+     corePath = pathToCore;
+ 
+-    SupAppIPC.loadAuthorizations(userDataPath);
++    SupAppIPC.loadAuthorizations(rwUserDataPath);
+ 
+-    getLanguageCode(userDataPath, (languageCode) => {
++    getLanguageCode(rwUserDataPath, (languageCode) => {
+       i18n.setLanguageCode(languageCode);
+       i18n.load([ "startup", "tray" ], () => {
+         if (dataPathErr != null) {
+@@ -135,7 +137,7 @@ function setupMainWindow() {
+   mainWindow.loadURL(`file://${__dirname}/renderer/${i18n.getLocalizedFilename("index.html")}`);
+ 
+   mainWindow.webContents.on("did-finish-load", () => {
+-    mainWindow.webContents.send("init", corePath, userDataPath, i18n.languageCode);
++    mainWindow.webContents.send("init", corePath, roUserDataPath, rwUserDataPath, i18n.languageCode);
+     mainWindow.show();
+   });
+ 
+diff --git a/src/renderer/forkServerProcess.ts b/src/renderer/forkServerProcess.ts
+index 6f3469d..7bef440 100644
+--- a/src/renderer/forkServerProcess.ts
++++ b/src/renderer/forkServerProcess.ts
+@@ -19,7 +19,7 @@ export default function forkSererProcess(extraArgs: string[] = []) {
+ 
+   const serverProcess = fork(
+     serverPath,
+-    [ `--data-path=${settings.userDataPath}` ].concat(extraArgs),
++    [ `--data-path=${settings.roUserDataPath}`, `--rw-data-path=${settings.rwUserDataPath}` ].concat(extraArgs),
+     { silent: true, env: serverEnv }
+   );
+   return serverProcess;
+diff --git a/src/renderer/index.ts b/src/renderer/index.ts
+index b59b8b2..ee31bba 100644
+--- a/src/renderer/index.ts
++++ b/src/renderer/index.ts
+@@ -26,8 +26,8 @@ const namespaces = [
+   "welcome", "home"
+ ];
+ 
+-function onInitialize(sender: any, corePath: string, userDataPath: string, languageCode: string) {
+-  settings.setPaths(corePath, userDataPath);
++function onInitialize(sender: any, corePath: string, roUserDataPath: string, rwUserDataPath: string, languageCode: string) {
++  settings.setPaths(corePath, roUserDataPath, rwUserDataPath);
+   i18n.setLanguageCode(languageCode);
+   i18n.load(namespaces, () => { settings.load(onSettingsLoaded); });
+ }
+@@ -42,7 +42,7 @@ function onQuit() {
+ function onSettingsLoaded(err: Error) {
+   if (err != null) {
+     const label = i18n.t("startup:errors.couldNotLoadSettings", {
+-      settingsPath: `${settings.userDataPath}/settings.json`,
++      settingsPath: `${settings.rwUserDataPath}/settings.json`,
+       reason: err.message
+     });
+     const options = {
+diff --git a/src/renderer/serverSettings/index.ts b/src/renderer/serverSettings/index.ts
+index 7316646..a6b9925 100644
+--- a/src/renderer/serverSettings/index.ts
++++ b/src/renderer/serverSettings/index.ts
+@@ -79,7 +79,7 @@ function getServerConfig() {
+ 
+   let localConfig: ServerConfig;
+   try {
+-    localConfig = JSON.parse(fs.readFileSync(`${settings.userDataPath}/config.json`, { encoding: "utf8" }));
++    localConfig = JSON.parse(fs.readFileSync(`${settings.rwUserDataPath}/config.json`, { encoding: "utf8" }));
+   } catch (err) { /* Ignore */ }
+   if (localConfig == null) localConfig = {} as any;
+ 
+@@ -93,7 +93,7 @@ function getServerConfig() {
+ }
+ 
+ function onOpenProjectsFolderClick() {
+-  electron.shell.openExternal(`${settings.userDataPath}/projects/`);
++  electron.shell.openExternal(`${settings.rwUserDataPath}/projects/`);
+ }
+ 
+ function onChangeAutoStartServer() {
+@@ -149,7 +149,7 @@ export function applyScheduledSave() {
+     maxRecentBuilds: parseInt(maxRecentBuildsElt.value, 10)
+   };
+ 
+-  fs.writeFileSync(`${settings.userDataPath}/config.json`, JSON.stringify(config, null, 2) + "\n", { encoding: "utf8" });
++  fs.writeFileSync(`${settings.rwUserDataPath}/config.json`, JSON.stringify(config, null, 2) + "\n", { encoding: "utf8" });
+ 
+   clearTimeout(scheduleSaveTimeoutId);
+   scheduleSaveTimeoutId = null;
+diff --git a/src/renderer/settings.ts b/src/renderer/settings.ts
+index 4c5c299..5a4c2c7 100644
+--- a/src/renderer/settings.ts
++++ b/src/renderer/settings.ts
+@@ -2,7 +2,8 @@ import * as fs from "fs";
+ import * as i18n from "../shared/i18n";
+ 
+ export let corePath: string;
+-export let userDataPath: string;
++export let roUserDataPath: string;
++export let rwUserDataPath: string;
+ 
+ export let favoriteServers: ServerEntry[];
+ export let favoriteServersById: { [id: string]: ServerEntry };
+@@ -14,9 +15,10 @@ export let nickname: string;
+ export let presence: "online"|"away"|"offline";
+ export let savedChatrooms: string[];
+ 
+-export function setPaths(newCorePath: string, newUserDataPath: string) {
++export function setPaths(newCorePath: string, newRoUserDataPath: string, newRwUserDataPath: string) {
+   corePath = newCorePath;
+-  userDataPath = newUserDataPath;
++  roUserDataPath = newRoUserDataPath;
++  rwUserDataPath = newRwUserDataPath;
+ }
+ 
+ export function setNickname(newNickname: string) {
+@@ -36,7 +38,7 @@ export function setAutoStartServer(enabled: boolean) {
+ }
+ 
+ export function load(callback: (err: Error) => void) {
+-  const settingsPath = `${userDataPath}/settings.json`;
++  const settingsPath = `${rwUserDataPath}/settings.json`;
+   console.log(`Loading settings from ${settingsPath}.`);
+ 
+   fs.readFile(settingsPath, { encoding: "utf8" }, (err, dataJSON) => {
+@@ -97,7 +99,7 @@ export function applyScheduledSave() {
+     savedChatrooms
+   };
+ 
+-  fs.writeFileSync(`${userDataPath}/settings.json`, JSON.stringify(data, null, 2) + "\n", { encoding: "utf8" });
++  fs.writeFileSync(`${rwUserDataPath}/settings.json`, JSON.stringify(data, null, 2) + "\n", { encoding: "utf8" });
+ 
+   clearTimeout(scheduleSaveTimeoutId);
+   scheduleSaveTimeoutId = null;
+-- 
+2.9.3
+

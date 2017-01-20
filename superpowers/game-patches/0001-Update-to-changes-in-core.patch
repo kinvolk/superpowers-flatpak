@@ -1,0 +1,25 @@
+From 112cf0ca86fcdb7446c4cfea2c2b5e45c4397190 Mon Sep 17 00:00:00 2001
+From: Krzesimir Nowak <krzesimir@kinvolk.io>
+Date: Fri, 20 Jan 2017 15:10:15 +0100
+Subject: [PATCH] Update to changes in core
+
+---
+ SupRuntime/src/index.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/SupRuntime/src/index.ts b/SupRuntime/src/index.ts
+index 67dd6fb..ae99f0f 100644
+--- a/SupRuntime/src/index.ts
++++ b/SupRuntime/src/index.ts
+@@ -32,7 +32,7 @@ export function registerResource(name: string, plugin: SupRuntime.RuntimeResourc
+   resourcePlugins[name] = plugin;
+ }
+ 
+-SupCore.system = new SupCore.System("", "");
++SupCore.system = new SupCore.System("", "", "");
+ 
+ // Setup SupApp
+ if ((global as any).SupApp == null) {
+-- 
+2.9.3
+

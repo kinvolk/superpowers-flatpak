@@ -1,4 +1,4 @@
-From a4911a0b043f7f6d8a44b0b93ea0d385254c1889 Mon Sep 17 00:00:00 2001
+From 14f4ae80b31f64f62bff6809533f2f7c972b95c4 Mon Sep 17 00:00:00 2001
 From: Krzesimir Nowak <krzesimir@kinvolk.io>
 Date: Tue, 17 Jan 2017 13:31:20 +0100
 Subject: [PATCH 3/3] Pass some more env variables to the server process
@@ -11,7 +11,7 @@ variables that point to paths somewhere in ${HOME}/.var or /app.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/renderer/forkServerProcess.ts b/src/renderer/forkServerProcess.ts
-index 6f3469d..4da1fe0 100644
+index 7bef440..fe2dbdb 100644
 --- a/src/renderer/forkServerProcess.ts
 +++ b/src/renderer/forkServerProcess.ts
 @@ -13,7 +13,7 @@ export default function forkSererProcess(extraArgs: string[] = []) {
