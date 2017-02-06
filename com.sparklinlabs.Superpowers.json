@@ -75,7 +75,7 @@
                 },
                 {
                     "type": "file",
-                    "path": "superpowers/app-patches/0002-Disable-updates.patch",
+                    "path": "superpowers/app-patches/0002-Disable-updates-when-running-under-flatpak.patch",
                     "dest": "app-patches"
                 },
                 {

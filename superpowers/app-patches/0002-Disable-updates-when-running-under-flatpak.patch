@@ -1,0 +1,42 @@
+From 897258a88d218903c8d4db4f6e649d5e357d86d0 Mon Sep 17 00:00:00 2001
+From: Krzesimir Nowak <krzesimir@kinvolk.io>
+Date: Mon, 16 Jan 2017 21:47:49 +0100
+Subject: [PATCH 2/3] Disable updates when running under flatpak
+
+Flatpak itself should care about possible updates.
+---
+ src/renderer/updateManager.ts | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/src/renderer/updateManager.ts b/src/renderer/updateManager.ts
+index 46dc4c3..fe8a86e 100644
+--- a/src/renderer/updateManager.ts
++++ b/src/renderer/updateManager.ts
+@@ -24,7 +24,23 @@ if (appVersion === "0.0.0-dev") {
+ } else appVersion = `v${appVersion}`;
+ 
+ export function checkForUpdates(callback: (err: Error) => void) {
+-  async.series([ checkAppUpdate, checkCoreUpdate ], callback);
++  let updateRoutines = [ checkAppUpdate, checkCoreUpdate ];
++  if (underFlatpak()) {
++    updateRoutines = [ checkNoUpdates ];
++  async.series(updateRoutines, callback);
++}
++
++function underFlatpak() {
++  if (process.env.XDG_RUNTIME_DIR == null) {
++    return false;
++  }
++
++  const flatpakInfo = path.join(process.env.XDG_RUNTIME_DIR, "flatpak-info");
++  return fs.existsSync(flatpakInfo) && fs.statSync(flatpakInfo).isFile();
++}
++
++function checkNoUpdates(callback: (err: Error) => void) {
++  callback(null);
+ }
+ 
+ function checkAppUpdate(callback: (err: Error) => void) {
+-- 
+2.9.3
+
