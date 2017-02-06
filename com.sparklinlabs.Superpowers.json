@@ -111,7 +111,7 @@
             ]
         },
         {
-            "name": "metadata",
+            "name": "resources",
             "sources": [
                 {
                     "type": "file",
@@ -119,23 +119,23 @@
                 },
                 {
                     "type": "file",
-                    "path": "metadata/Makefile"
+                    "path": "resources/Makefile"
                 },
                 {
                     "type": "file",
-                    "path": "metadata/install"
+                    "path": "resources/install"
                 },
                 {
                     "type": "file",
-                    "path": "metadata/com.sparklinlabs.Superpowers.png"
+                    "path": "resources/com.sparklinlabs.Superpowers.png"
                 },
                 {
                     "type": "file",
-                    "path": "metadata/com.sparklinlabs.Superpowers.desktop"
+                    "path": "resources/com.sparklinlabs.Superpowers.desktop"
                 },
                 {
                     "type": "file",
-                    "path": "metadata/com.sparklinlabs.Superpowers.appdata.xml"
+                    "path": "resources/com.sparklinlabs.Superpowers.appdata.xml"
                 }
             ]
         }
