@@ -1,4 +1,4 @@
-From fd7c2456b955a236284a95d1cdf462f594a35267 Mon Sep 17 00:00:00 2001
+From 5c0d34a4de09d8bd561e3377ecb64f4db6c63d04 Mon Sep 17 00:00:00 2001
 From: Krzesimir Nowak <krzesimir@kinvolk.io>
 Date: Tue, 17 Jan 2017 13:31:20 +0100
 Subject: [PATCH 3/4] Pass some more env variables to the server process

@@ -1,4 +1,4 @@
-From ae0890ccaaa7758bec45133a5935c06edf83d5d6 Mon Sep 17 00:00:00 2001
+From 8277e1ae6be296478de1edb70e01dddc8f4e22e6 Mon Sep 17 00:00:00 2001
 From: Krzesimir Nowak <krzesimir@kinvolk.io>
 Date: Mon, 16 Jan 2017 21:47:49 +0100
 Subject: [PATCH 2/4] Disable updates when running under flatpak
@@ -6,9 +6,9 @@ Subject: [PATCH 2/4] Disable updates when running under flatpak
 Flatpak itself should care about possible updates.
 ---
  src/renderer/flatpak.ts       | 11 +++++++++++
- src/renderer/index.ts         |  9 +++++++--
+ src/renderer/index.ts         | 16 +++++++++++++---
  src/renderer/updateManager.ts | 10 +++++++++-
- 3 files changed, 27 insertions(+), 3 deletions(-)
+ 3 files changed, 33 insertions(+), 4 deletions(-)
  create mode 100644 src/renderer/flatpak.ts
 
 diff --git a/src/renderer/flatpak.ts b/src/renderer/flatpak.ts
@@ -29,7 +29,7 @@ index 0000000..c5a030f
 +  return fs.existsSync(flatpakInfo) && fs.statSync(flatpakInfo).isFile();
 +}
 diff --git a/src/renderer/index.ts b/src/renderer/index.ts
-index ee31bba..16eec77 100644
+index ee31bba..928a2f8 100644
 --- a/src/renderer/index.ts
 +++ b/src/renderer/index.ts
 @@ -16,6 +16,7 @@ import openServerSettings from "./tabs/openServerSettings";
@@ -40,25 +40,49 @@ index ee31bba..16eec77 100644
  
  electron.ipcRenderer.on("init", onInitialize);
  electron.ipcRenderer.on("quit", onQuit);
-@@ -71,12 +72,16 @@ function start() {
+@@ -71,7 +72,10 @@ function start() {
  
    splashScreen.fadeOut(() => {
      if (settings.nickname == null) {
 -      async.series([ showWelcomeDialog, installFirstSystem ]);
 +      let actions = [ showWelcomeDialog, installFirstSystem ];
 +      if (flatpak.underFlatpak())
-+        actions = [ showWelcomeDialog ];
++        actions = [ showWelcomeDialog, startLocalServer ];
 +      async.series(actions);
      } else {
        me.start();
        chat.start();
- 
--      updateSystemsAndPlugins();
-+      if (!flatpak.underFlatpak())
-+        updateSystemsAndPlugins();
-     }
+@@ -105,6 +109,11 @@ function showWelcomeDialog(callback: Function) {
    });
  }
+ 
++function startLocalServer(callback: Function) {
++  localServer.start();
++  callback();
++}
++
+ function installFirstSystem(callback: Function) {
+   const label = i18n.t("welcome:askGameInstall.prompt");
+   const options = {
+@@ -115,8 +124,7 @@ function installFirstSystem(callback: Function) {
+ 
+   new dialogs.ConfirmDialog(label, options, (installGame) => {
+     if (!installGame) {
+-      localServer.start();
+-      callback();
++      startLocalServer(callback);
+       return;
+     }
+ 
+@@ -160,6 +168,8 @@ function installFirstSystem(callback: Function) {
+ }
+ 
+ function updateSystemsAndPlugins() {
++  if (flatpak.underFlatpak()) { localServer.start(); return; }
++
+   serverSettingsSystems.getRegistry((registry) => {
+     if (registry == null) { localServer.start(); return; }
+ 
 diff --git a/src/renderer/updateManager.ts b/src/renderer/updateManager.ts
 index 46dc4c3..e999d35 100644
 --- a/src/renderer/updateManager.ts
