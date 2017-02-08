@@ -1,35 +1,85 @@
-From cf93701f32321634f9ddd131c4ce7f9ce5096fca Mon Sep 17 00:00:00 2001
+From ae0890ccaaa7758bec45133a5935c06edf83d5d6 Mon Sep 17 00:00:00 2001
 From: Krzesimir Nowak <krzesimir@kinvolk.io>
 Date: Mon, 16 Jan 2017 21:47:49 +0100
 Subject: [PATCH 2/4] Disable updates when running under flatpak
 
 Flatpak itself should care about possible updates.
 ---
- src/renderer/updateManager.ts | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+ src/renderer/flatpak.ts       | 11 +++++++++++
+ src/renderer/index.ts         |  9 +++++++--
+ src/renderer/updateManager.ts | 10 +++++++++-
+ 3 files changed, 27 insertions(+), 3 deletions(-)
+ create mode 100644 src/renderer/flatpak.ts
 
-diff --git a/src/renderer/updateManager.ts b/src/renderer/updateManager.ts
-index 46dc4c3..7ae7a17 100644
---- a/src/renderer/updateManager.ts
-+++ b/src/renderer/updateManager.ts
-@@ -24,7 +24,23 @@ if (appVersion === "0.0.0-dev") {
- } else appVersion = `v${appVersion}`;
- 
- export function checkForUpdates(callback: (err: Error) => void) {
--  async.series([ checkAppUpdate, checkCoreUpdate ], callback);
-+  let updateRoutines = [ checkAppUpdate, checkCoreUpdate ];
-+  if (underFlatpak())
-+    updateRoutines = [ checkNoUpdates ];
-+  async.series(updateRoutines, callback);
-+}
+diff --git a/src/renderer/flatpak.ts b/src/renderer/flatpak.ts
+new file mode 100644
+index 0000000..c5a030f
+--- /dev/null
++++ b/src/renderer/flatpak.ts
+@@ -0,0 +1,11 @@
++import * as path from "path";
++import * as fs from "fs";
 +
-+function underFlatpak() {
++export function underFlatpak() {
 +  if (process.env.XDG_RUNTIME_DIR == null) {
 +    return false;
 +  }
 +
 +  const flatpakInfo = path.join(process.env.XDG_RUNTIME_DIR, "flatpak-info");
 +  return fs.existsSync(flatpakInfo) && fs.statSync(flatpakInfo).isFile();
++}
+diff --git a/src/renderer/index.ts b/src/renderer/index.ts
+index ee31bba..16eec77 100644
+--- a/src/renderer/index.ts
++++ b/src/renderer/index.ts
+@@ -16,6 +16,7 @@ import openServerSettings from "./tabs/openServerSettings";
+ import * as localServer from "./localServer";
+ import * as chat from "./chat";
+ import WelcomeDialog from "./WelcomeDialog";
++import * as flatpak from "./flatpak";
+ 
+ electron.ipcRenderer.on("init", onInitialize);
+ electron.ipcRenderer.on("quit", onQuit);
+@@ -71,12 +72,16 @@ function start() {
+ 
+   splashScreen.fadeOut(() => {
+     if (settings.nickname == null) {
+-      async.series([ showWelcomeDialog, installFirstSystem ]);
++      let actions = [ showWelcomeDialog, installFirstSystem ];
++      if (flatpak.underFlatpak())
++        actions = [ showWelcomeDialog ];
++      async.series(actions);
+     } else {
+       me.start();
+       chat.start();
+ 
+-      updateSystemsAndPlugins();
++      if (!flatpak.underFlatpak())
++        updateSystemsAndPlugins();
+     }
+   });
+ }
+diff --git a/src/renderer/updateManager.ts b/src/renderer/updateManager.ts
+index 46dc4c3..e999d35 100644
+--- a/src/renderer/updateManager.ts
++++ b/src/renderer/updateManager.ts
+@@ -12,6 +12,7 @@ import * as systemServerSettings from "./serverSettings/systems";
+ import * as i18n from "../shared/i18n";
+ import * as splashScreen from "./splashScreen";
+ import fetch from "../shared/fetch";
++import * as flatpak from "./flatpak";
+ 
+ /* tslint:disable */
+ const https: typeof dummy_https = require("follow-redirects").https;
+@@ -24,7 +25,14 @@ if (appVersion === "0.0.0-dev") {
+ } else appVersion = `v${appVersion}`;
+ 
+ export function checkForUpdates(callback: (err: Error) => void) {
+-  async.series([ checkAppUpdate, checkCoreUpdate ], callback);
++  let updateRoutines = [ checkAppUpdate, checkCoreUpdate ];
++  if (flatpak.underFlatpak())
++    updateRoutines = [ checkNoUpdates ];
++  async.series(updateRoutines, callback);
 +}
 +
 +function checkNoUpdates(callback: (err: Error) => void) {
