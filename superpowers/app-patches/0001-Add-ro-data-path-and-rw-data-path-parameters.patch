@@ -1,4 +1,4 @@
-From 444d756c96f72044fb05deb05f91533d70b35b42 Mon Sep 17 00:00:00 2001
+From ba0c63cf4f64572f7a094d2b4a875f88c34cfa5a Mon Sep 17 00:00:00 2001
 From: Krzesimir Nowak <krzesimir@kinvolk.io>
 Date: Mon, 12 Dec 2016 14:31:57 +0100
 Subject: [PATCH 1/4] Add ro-data-path and --rw-data-path parameters
@@ -7,28 +7,14 @@ The --rw-data-path is used to point to the directory where we can
 write some files (like settings). The server will also use this
 directory through the new --rw-data-path flag.
 ---
- package.json                         |  2 +-
  src/getPaths.ts                      | 43 +++++++++++++++++++++++++-----------
  src/main.ts                          | 16 ++++++++------
  src/renderer/forkServerProcess.ts    |  2 +-
  src/renderer/index.ts                |  6 ++---
  src/renderer/serverSettings/index.ts |  6 ++---
  src/renderer/settings.ts             | 12 +++++-----
- 7 files changed, 54 insertions(+), 33 deletions(-)
+ 6 files changed, 53 insertions(+), 32 deletions(-)
 
-diff --git a/package.json b/package.json
-index a5b6309..219d1d1 100644
---- a/package.json
-+++ b/package.json
-@@ -4,7 +4,7 @@
-   "scripts": {
-     "prebuild": "npm install",
-     "build": "gulp --silent",
--    "start": "electron public --core-path=\"../core\"",
-+    "start": "electron public --core-path=\"../core\" --rw-data-path=\"<default>\"",
-     "package": "node scripts/package.js"
-   },
-   "license": "ISC",
 diff --git a/src/getPaths.ts b/src/getPaths.ts
 index 65f60e3..b83a732 100644
 --- a/src/getPaths.ts

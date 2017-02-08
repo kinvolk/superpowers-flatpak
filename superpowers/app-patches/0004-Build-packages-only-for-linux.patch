@@ -1,4 +1,4 @@
-From a2d1c9153a79033fc745a41670cd79af267f4210 Mon Sep 17 00:00:00 2001
+From 7be23616aec2f4c035222983934e57cbc423987e Mon Sep 17 00:00:00 2001
 From: Krzesimir Nowak <krzesimir@kinvolk.io>
 Date: Tue, 7 Feb 2017 22:21:23 +0100
 Subject: [PATCH 4/4] Build packages only for linux

@@ -1,4 +1,4 @@
-From 8277e1ae6be296478de1edb70e01dddc8f4e22e6 Mon Sep 17 00:00:00 2001
+From 41acacd8c18687dcbfa34b228ecf95f16adffb2b Mon Sep 17 00:00:00 2001
 From: Krzesimir Nowak <krzesimir@kinvolk.io>
 Date: Mon, 16 Jan 2017 21:47:49 +0100
 Subject: [PATCH 2/4] Disable updates when running under flatpak
