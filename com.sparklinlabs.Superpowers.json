@@ -101,21 +101,6 @@
             ]
         },
         {
-            "name": "electron-prebuilt",
-            "no-autogen": true,
-            "build-options": {
-                "build-args": [
-                    "--share=network"
-                ]
-            },
-            "sources": [
-                {
-                    "type": "file",
-                    "path": "electron-prebuilt/Makefile"
-                }
-            ]
-        },
-        {
             "name": "resources",
             "sources": [
                 {
