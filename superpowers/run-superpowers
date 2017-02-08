@@ -3,4 +3,4 @@
 set -e
 
 cd '@SUPDIR@/app'
-npm run start
+./Superpowers ./resources/app --core-path='../core' --rw-data-path='<default>'

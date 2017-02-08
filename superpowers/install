@@ -5,10 +5,29 @@ set -e
 prefix=$(cat prefix)
 supdir="${prefix}/Superpowers"
 mkdir -p "${supdir}"
-# I have no clue what really needs to be copied…
-cp -a core "${supdir}"
-cp -a app "${supdir}"
-find "${supdir}" -type d -a -name '.git' -print0 | xargs -0 rm -rf
+
+arch=''
+unamearch=$(uname -m)
+case ${unamearch} in
+    x86_64)
+	arch='x64'
+	;;
+    i*86)
+	arch='ia32'
+	;;
+    armv7l)
+	arch='armv7l'
+	;;
+    *)
+	echo "Architecture ${unamearch} unsupported by electron"
+	exit 1
+	;;
+esac
+
+cp -a "app/packages/superpowers-v4.0.0-linux-${arch}" "${supdir}/app"
+cp -a 'core/packages/superpowers-core-v4.0.0' "${supdir}/core"
+mkdir -p "${supdir}/core/systems"
+cp -a 'core/packages/superpowers-game-v4.0.3' "${supdir}/core/systems/game"
 
 bindir="${prefix}/bin"
 mkdir -p "${bindir}"
