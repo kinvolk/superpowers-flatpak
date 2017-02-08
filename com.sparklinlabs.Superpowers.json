@@ -85,6 +85,11 @@
                 },
                 {
                     "type": "file",
+                    "path": "superpowers/app-patches/0004-Build-packages-only-for-linux.patch",
+                    "dest": "app-patches"
+                },
+                {
+                    "type": "file",
                     "path": "superpowers/core-patches/0001-Add-writable-data-path-next-to-the-possibly-read-onl.patch",
                     "dest": "core-patches"
                 },

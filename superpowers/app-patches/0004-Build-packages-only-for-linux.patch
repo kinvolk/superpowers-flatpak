@@ -1,0 +1,26 @@
+From 27dee8be83bfc4deb01e1d011d6a6245f12d841a Mon Sep 17 00:00:00 2001
+From: Krzesimir Nowak <krzesimir@kinvolk.io>
+Date: Tue, 7 Feb 2017 22:21:23 +0100
+Subject: [PATCH 4/4] Build packages only for linux
+
+---
+ scripts/package.js | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/scripts/package.js b/scripts/package.js
+index 6485f45..fbd81fd 100644
+--- a/scripts/package.js
++++ b/scripts/package.js
+@@ -27,7 +27,8 @@ const year = new Date().getFullYear();
+ packager({
+   dir: "public",
+   name: "Superpowers",
+-  all: true,
++  platform: "linux",
++  arch: "all",
+   version: publicPackage.superpowers.electron,
+   out: "packages",
+   icon: "icons/superpowers",
+-- 
+2.9.3
+
