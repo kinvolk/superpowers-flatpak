@@ -1,0 +1,28 @@
+From 6796c2d33b8b70210e68abb0f39c9adced28cc8e Mon Sep 17 00:00:00 2001
+From: Krzesimir Nowak <krzesimir@kinvolk.io>
+Date: Tue, 17 Jan 2017 13:31:20 +0100
+Subject: [PATCH 3/4] Pass some more env variables to the server process
+
+We will definitely need the LD_LIBRARY_PATH env var, so the dynamic
+linker can find the libgtk-x11 library, but we also pass some more
+variables that point to paths somewhere in ${HOME}/.var or /app.
+---
+ src/renderer/forkServerProcess.ts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/renderer/forkServerProcess.ts b/src/renderer/forkServerProcess.ts
+index 7bef440..fe2dbdb 100644
+--- a/src/renderer/forkServerProcess.ts
++++ b/src/renderer/forkServerProcess.ts
+@@ -13,7 +13,7 @@ export default function forkSererProcess(extraArgs: string[] = []) {
+   // for (const key in nodeProcess.env) serverEnv[key] = nodeProcess.env[key];
+ 
+   // So instead, we'll just copy the environment variables we definitely need
+-  for (const varName of [ "NODE_ENV", "APPDATA", "HOME", "XDG_DATA_HOME" ]) {
++  for (const varName of [ "NODE_ENV", "APPDATA", "HOME", "XDG_DATA_HOME", "XDG_CONFIG_HOME", "XDG_CACHE_HOME", "LD_LIBRARY_PATH", "GST_PLUGIN_SYSTEM_PATH", "XDG_CONFIG_DIRS", "PATH", "GI_TYPELIB_PATH" ]) {
+     if (process.env[varName] != null) serverEnv[varName] = process.env[varName];
+   }
+ 
+-- 
+2.9.3
+

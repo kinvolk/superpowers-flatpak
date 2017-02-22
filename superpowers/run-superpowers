@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+
+set -e
+
+cd '@SUPDIR@/app'
+./Superpowers ./resources/app --core-path='../core' --rw-data-path='<default>'

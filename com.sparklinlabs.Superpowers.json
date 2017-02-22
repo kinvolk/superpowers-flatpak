@@ -1,0 +1,133 @@
+{
+    "app-id": "com.sparklinlabs.Superpowers",
+    "base": "io.atom.electron.BaseApp",
+    "base-version": "master",
+    "runtime": "org.freedesktop.Platform",
+    "runtime-version": "1.4",
+    "sdk": "org.freedesktop.Sdk",
+    "command": "run-superpowers",
+    "finish-args": [
+        "--device=dri",
+        "--filesystem=home",
+        "--share=ipc",
+        "--share=network",
+        "--socket=pulseaudio",
+        "--socket=x11"
+    ],
+    "modules": [
+        {
+            "name": "nodejs",
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://nodejs.org/dist/v5.12.0/node-v5.12.0.tar.xz",
+                    "path": "node-v5.12.0.tar.xz",
+                    "sha256": "4f926373f11f2a25156eee1804ec012eb912c42e5d34fc2909889da22efdadfe"
+                }
+            ]
+        },
+        {
+            "name": "superpowers",
+            "build-options": {
+                "build-args": [
+                    "--share=network"
+                ]
+            },
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/superpowers/superpowers-core.git",
+                    "branch": "8c228b13d7de45f4d1f379a4a95027a759f61d52",
+                    "dest": "core"
+                },
+                {
+                    "type": "git",
+                    "url": "https://github.com/superpowers/superpowers-game.git",
+                    "branch": "82d3d1ccf2ad6831e629537d186c76cbd294e896",
+                    "dest": "core/systems/game"
+                },
+                {
+                    "type": "git",
+                    "url": "https://github.com/superpowers/superpowers-app.git",
+                    "branch": "50f9f21faa18a8ae7248b41dc2c2b58b3ccfe760",
+                    "dest": "app"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/Makefile"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/install"
+                },
+                {
+                    "type": "file",
+                    "path": "common/configure"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/run-superpowers"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/app-patches/0001-Add-ro-data-path-and-rw-data-path-parameters.patch",
+                    "dest": "app-patches"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/app-patches/0002-Disable-updates-when-running-under-flatpak.patch",
+                    "dest": "app-patches"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/app-patches/0003-Pass-some-more-env-variables-to-the-server-process.patch",
+                    "dest": "app-patches"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/app-patches/0004-Build-packages-only-for-linux.patch",
+                    "dest": "app-patches"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/core-patches/0001-Add-writable-data-path-next-to-the-possibly-read-onl.patch",
+                    "dest": "core-patches"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/game-patches/0001-Update-to-changes-in-core.patch",
+                    "dest": "game-patches"
+                }
+            ]
+        },
+        {
+            "name": "resources",
+            "sources": [
+                {
+                    "type": "file",
+                    "path": "common/configure"
+                },
+                {
+                    "type": "file",
+                    "path": "resources/Makefile"
+                },
+                {
+                    "type": "file",
+                    "path": "resources/install"
+                },
+                {
+                    "type": "file",
+                    "path": "resources/com.sparklinlabs.Superpowers.png"
+                },
+                {
+                    "type": "file",
+                    "path": "resources/com.sparklinlabs.Superpowers.desktop"
+                },
+                {
+                    "type": "file",
+                    "path": "resources/com.sparklinlabs.Superpowers.appdata.xml"
+                }
+            ]
+        }
+    ]
+}
