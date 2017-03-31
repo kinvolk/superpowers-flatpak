@@ -11,7 +11,7 @@ all:
 	# generate packages
 	cd core && npm run package
 	cd core && npm run package game
-	cd app && npm run package
+	cd app && npm run package --platform=linux
 
 install:
 	./install

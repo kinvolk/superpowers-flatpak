@@ -1,8 +1,8 @@
 From 60ee1d9e760ae76368e5a4a0ff44058d0d3a23a1 Mon Sep 17 00:00:00 2001
 From: Krzesimir Nowak <krzesimir@kinvolk.io>
 Date: Wed, 18 Jan 2017 10:39:55 +0100
-Subject: [PATCH] Add writable data path next to the possibly read-only data
- path
+Subject: [PATCH 1/2] Add writable data path next to the possibly read-only
+ data path
 
 The data path may point to the read only directory like
 /app/Superpowers/core inside the flatpak sandbox. So we added the path

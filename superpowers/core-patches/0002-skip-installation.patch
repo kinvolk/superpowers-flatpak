@@ -1,0 +1,68 @@
+From 9fb706bd21f351235dad94bc54d7f13f8c6be62a Mon Sep 17 00:00:00 2001
+From: Krzesimir Nowak <krzesimir@kinvolk.io>
+Date: Fri, 31 Mar 2017 15:12:21 +0200
+Subject: [PATCH 2/2] skip installation
+
+---
+ scripts/build.js | 33 +++++++++++----------------------
+ 1 file changed, 11 insertions(+), 22 deletions(-)
+
+diff --git a/scripts/build.js b/scripts/build.js
+index 607600a..0c1ae70 100644
+--- a/scripts/build.js
++++ b/scripts/build.js
+@@ -16,27 +16,16 @@ function log(message) {
+ let anyRequireFailed = false;
+ 
+ try {
+-  require.resolve("async");
+-  require.resolve("yargs");
+-  require.resolve("chalk");
++  require("async");
++  require("yargs");
++  require("chalk");
+ } catch (err) {
+-  anyRequireFailed = true;
+-}
+-
+-if (anyRequireFailed) {
+-  const spawnOptions = { cwd: rootPath, env: process.env, stdio: "inherit" };
+-  const result = child_process.spawnSync("npm" + (execSuffix ? ".cmd" : ""), [ "install", "async", "yargs", "chalk" ], spawnOptions);
+-
+-  if (result.error != null) {
+-    log("Failed to install async, args and chalk");
+-    console.log(result.error);
++    log("Failed to require async, args and chalk");
++    console.log(err);
+     process.exit(1);
+-  }
++}
+ 
+-  // NOTE: Without a small delay after npm exits,
+-  // installation sometimes fails since Node.js 5.x.
+-  setTimeout(build, 1000);
+-} else build();
++build();
+ 
+ function build() {
+   const async = require("async");
+@@ -100,12 +89,12 @@ function build() {
+           }
+         }
+ 
+-        const npm = child_process.spawn(`npm${execSuffix ? ".cmd" : ""}`, [ "install" ], spawnOptions);
++        //const npm = child_process.spawn(`npm${execSuffix ? ".cmd" : ""}`, [ "install" ], spawnOptions);
+ 
+-        npm.on("close", (status) => {
+-          if (status !== 0) errors.push(`${relBuildPath}: "npm install" exited with status code ${status}`);
++        //npm.on("close", (status) => {
++          //if (status !== 0) errors.push(`${relBuildPath}: "npm install" exited with status code ${status}`);
+           cb(null, packageJSON);
+-        });
++        //});
+       },
+ 
+       (packageJSON, cb) => {
+-- 
+2.9.3
+

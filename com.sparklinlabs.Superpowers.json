@@ -27,12 +27,26 @@
             ]
         },
         {
-            "name": "superpowers",
+            "name": "superpowers-deps",
+            "no-autogen": true,
             "build-options": {
                 "build-args": [
                     "--share=network"
                 ]
             },
+            "sources": [
+                {
+                    "type": "file",
+                    "path": "superpowers-deps/Makefile"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers-deps/install"
+                }
+            ]
+        },
+        {
+            "name": "superpowers",
             "sources": [
                 {
                     "type": "git",
@@ -85,12 +99,22 @@
                 },
                 {
                     "type": "file",
-                    "path": "superpowers/app-patches/0004-Build-packages-only-for-linux.patch",
+                    "path": "superpowers/app-patches/0004-Allow-choosing-which-packages-to-build.patch",
+                    "dest": "app-patches"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/app-patches/0005-skip-installation.patch",
                     "dest": "app-patches"
                 },
                 {
                     "type": "file",
                     "path": "superpowers/core-patches/0001-Add-writable-data-path-next-to-the-possibly-read-onl.patch",
+                    "dest": "core-patches"
+                },
+                {
+                    "type": "file",
+                    "path": "superpowers/core-patches/0002-skip-installation.patch",
                     "dest": "core-patches"
                 },
                 {

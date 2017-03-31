@@ -1,7 +1,7 @@
 From 6796c2d33b8b70210e68abb0f39c9adced28cc8e Mon Sep 17 00:00:00 2001
 From: Krzesimir Nowak <krzesimir@kinvolk.io>
 Date: Tue, 17 Jan 2017 13:31:20 +0100
-Subject: [PATCH 3/4] Pass some more env variables to the server process
+Subject: [PATCH 3/5] Pass some more env variables to the server process
 
 We will definitely need the LD_LIBRARY_PATH env var, so the dynamic
 linker can find the libgtk-x11 library, but we also pass some more

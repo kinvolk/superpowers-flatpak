@@ -1,7 +1,7 @@
 From ba0c63cf4f64572f7a094d2b4a875f88c34cfa5a Mon Sep 17 00:00:00 2001
 From: Krzesimir Nowak <krzesimir@kinvolk.io>
 Date: Mon, 12 Dec 2016 14:31:57 +0100
-Subject: [PATCH 1/4] Add ro-data-path and --rw-data-path parameters
+Subject: [PATCH 1/5] Add ro-data-path and --rw-data-path parameters
 
 The --rw-data-path is used to point to the directory where we can
 write some files (like settings). The server will also use this

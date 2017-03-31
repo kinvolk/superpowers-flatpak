@@ -1,7 +1,7 @@
 From 41acacd8c18687dcbfa34b228ecf95f16adffb2b Mon Sep 17 00:00:00 2001
 From: Krzesimir Nowak <krzesimir@kinvolk.io>
 Date: Mon, 16 Jan 2017 21:47:49 +0100
-Subject: [PATCH 2/4] Disable updates when running under flatpak
+Subject: [PATCH 2/5] Disable updates when running under flatpak
 
 Flatpak itself should care about possible updates.
 ---

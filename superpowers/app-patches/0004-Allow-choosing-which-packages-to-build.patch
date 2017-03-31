@@ -1,0 +1,65 @@
+From 13273bb09aa2b73f9220e73d35c77f7ade4f35d0 Mon Sep 17 00:00:00 2001
+From: Krzesimir Nowak <krzesimir@kinvolk.io>
+Date: Tue, 7 Feb 2017 22:21:23 +0100
+Subject: [PATCH 4/5] Allow choosing which packages to build
+
+For flatpak we are not interested in building superpowers for mac or
+windows, only for linux. So now we can run "npm run package linux
+ia32" to build package for 32bit linux. The values for the parameters
+are the same as the ones electron packager takes for its platform and
+arch options.
+---
+ scripts/package.js | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/package.js b/scripts/package.js
+index 6485f45..368b17e 100644
+--- a/scripts/package.js
++++ b/scripts/package.js
+@@ -1,5 +1,6 @@
+ "use strict";
+ 
++const yargs = require("yargs");
+ const fs = require("fs");
+ const execSync = require("child_process").execSync;
+ const path = require("path");
+@@ -9,6 +10,17 @@ const publicPackage = JSON.parse(fs.readFileSync(`${__dirname}/../public/package
+ publicPackage.version = rootPackage.version;
+ publicPackage.dependencies = rootPackage.dependencies;
+ 
++const argv = yargs.argv;
++let platform = argv._[0];
++let arch = argv._[1];
++
++if (arch == null) {
++  arch = "all";
++}
++if (platform == null) {
++  platform = "all";
++}
++
+ fs.writeFileSync(`${__dirname}/../public/package.json`, JSON.stringify(publicPackage, null, 2) + "\n");
+ 
+ execSync("npm install --production", { cwd: `${__dirname}/../public`, stdio: "inherit" });
+@@ -19,7 +31,7 @@ execSync("npm install --production", { cwd: `${__dirname}/../public`, stdio: "in
+ // See https://github.com/electron-userland/electron-packager/issues/413
+ execSync("npm install rcedit@0.5.0 electron-packager@7.1.0", { stdio: "inherit" });
+ 
+-console.log("Running electron-packager...");
++console.log(`Running electron-packager for platform '${platform}' and arch '${arch}'...`);
+ 
+ const packager = require("electron-packager");
+ const year = new Date().getFullYear();
+@@ -27,7 +39,8 @@ const year = new Date().getFullYear();
+ packager({
+   dir: "public",
+   name: "Superpowers",
+-  all: true,
++  platform: platform,
++  arch: arch,
+   version: publicPackage.superpowers.electron,
+   out: "packages",
+   icon: "icons/superpowers",
+-- 
+2.9.3
+
